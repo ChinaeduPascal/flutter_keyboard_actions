@@ -343,7 +343,7 @@ class KeyboardActionstate extends State<KeyboardActions>
                       duration: _timeToDismiss,
                       child: _currentFooter,
                       height:
-                          _inserted ? _currentFooter!.preferredSize.height : 0,
+                          _inserted ? 200 : 0,
                     ),
                 ],
               ),
