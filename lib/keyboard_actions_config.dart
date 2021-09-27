@@ -24,6 +24,8 @@ class KeyboardActionsConfig {
   /// which dismisses the keyboard.
   final Widget? defaultDoneWidget;
 
+  final bool animateKeyboardBarHeightBaseOnContent;
+
   const KeyboardActionsConfig({
     this.keyboardActionsPlatform = KeyboardActionsPlatform.ALL,
     this.nextFocus = true,
@@ -31,5 +33,6 @@ class KeyboardActionsConfig {
     this.keyboardBarColor,
     this.keyboardSeparatorColor = Colors.transparent,
     this.defaultDoneWidget,
+    this.animateKeyboardBarHeightBaseOnContent = false
   });
 }

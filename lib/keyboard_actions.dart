@@ -89,8 +89,8 @@ class KeyboardActions extends StatefulWidget {
     this.enable = true,
     this.autoScroll = true,
     this.isDialog = false,
-    @Deprecated('Use tapOutsideBehavior instead.')
-        this.tapOutsideToDismiss = false,
+    @Deprecated(
+        'Use tapOutsideBehavior instead.') this.tapOutsideToDismiss = false,
     this.tapOutsideBehavior = TapOutsideBehavior.none,
     required this.config,
     this.overscroll = 12.0,
@@ -290,7 +290,7 @@ class KeyboardActionstate extends State<KeyboardActions>
 
   void _dismissListeningFocus() {
     _map.values.forEach(
-        (action) => action.focusNode.removeListener(_focusNodeListener));
+            (action) => action.focusNode.removeListener(_focusNodeListener));
   }
 
   bool _inserted = false;
@@ -321,15 +321,16 @@ class KeyboardActionstate extends State<KeyboardActions>
                   _clearFocus();
                 },
                 behavior: widget.tapOutsideBehavior ==
-                        TapOutsideBehavior.translucentDismiss
+                    TapOutsideBehavior.translucentDismiss
                     ? HitTestBehavior.translucent
                     : HitTestBehavior.opaque,
               ),
             ),
-          Positioned(
+          AnimatedPositioned(
             left: 0,
             right: 0,
             bottom: queryData.viewInsets.bottom,
+            duration: Duration(milliseconds: 350),
             child: Material(
               color: config!.keyboardBarColor ?? Colors.grey[200],
               elevation: 20,
@@ -339,12 +340,9 @@ class KeyboardActionstate extends State<KeyboardActions>
                   if (_currentAction!.displayActionBar)
                     _buildBar(_currentAction!.displayArrows),
                   if (_currentFooter != null)
-                    AnimatedContainer(
-                      duration: _timeToDismiss,
-                      child: _currentFooter,
-                      height:
-                          _inserted ? 200 : 0,
-                    ),
+                    _buildFooter()
+
+
                 ],
               ),
             ),
@@ -353,6 +351,20 @@ class KeyboardActionstate extends State<KeyboardActions>
       );
     });
     os.insert(_overlayEntry!);
+  }
+
+  _buildFooter() {
+    if(config!.animateKeyboardBarHeightBaseOnContent)
+    return AnimatedContainer(
+      duration: _timeToDismiss,
+      child: _currentFooter,
+    );
+    return Container(
+      child: _currentFooter,
+      height: _inserted
+          ? _currentFooter!.preferredSize.height
+          : 0,
+    );
   }
 
   /// Remove the overlay bar. Call when losing focus or being dismissed.
@@ -390,7 +402,8 @@ class KeyboardActionstate extends State<KeyboardActions>
     double newOffset = _currentAction!.displayActionBar
         ? _kBarSize
         : 0; // offset for the actions bar
-    newOffset += MediaQuery.of(context)
+    newOffset += MediaQuery
+        .of(context)
         .viewInsets
         .bottom; // + offset for the system keyboard
 
@@ -415,7 +428,10 @@ class KeyboardActionstate extends State<KeyboardActions>
   void _onLayout() {
     if (widget.isDialog) {
       final render = _keyParent.currentContext!.findRenderObject() as RenderBox;
-      final fullHeight = MediaQuery.of(context).size.height;
+      final fullHeight = MediaQuery
+          .of(context)
+          .size
+          .height;
       final localHeight = render.size.height;
       _localMargin = (fullHeight - localHeight) / 2;
     }
@@ -472,10 +488,13 @@ class KeyboardActionstate extends State<KeyboardActions>
     return AnimatedCrossFade(
       duration: _timeToDismiss,
       crossFadeState:
-          _isShowing ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      _isShowing ? CrossFadeState.showFirst : CrossFadeState.showSecond,
       firstChild: Container(
         height: _kBarSize,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         decoration: BoxDecoration(
           border: Border(
             top: BorderSide(
@@ -491,23 +510,35 @@ class KeyboardActionstate extends State<KeyboardActions>
             children: [
               config!.nextFocus && displayArrows
                   ? IconButton(
-                      icon: Icon(Icons.keyboard_arrow_up),
-                      tooltip: 'Previous',
-                      iconSize: IconTheme.of(context).size!,
-                      color: IconTheme.of(context).color,
-                      disabledColor: Theme.of(context).disabledColor,
-                      onPressed: _previousIndex != null ? _onTapUp : null,
-                    )
+                icon: Icon(Icons.keyboard_arrow_up),
+                tooltip: 'Previous',
+                iconSize: IconTheme
+                    .of(context)
+                    .size!,
+                color: IconTheme
+                    .of(context)
+                    .color,
+                disabledColor: Theme
+                    .of(context)
+                    .disabledColor,
+                onPressed: _previousIndex != null ? _onTapUp : null,
+              )
                   : const SizedBox.shrink(),
               config!.nextFocus && displayArrows
                   ? IconButton(
-                      icon: Icon(Icons.keyboard_arrow_down),
-                      tooltip: 'Next',
-                      iconSize: IconTheme.of(context).size!,
-                      color: IconTheme.of(context).color,
-                      disabledColor: Theme.of(context).disabledColor,
-                      onPressed: _nextIndex != null ? _onTapDown : null,
-                    )
+                icon: Icon(Icons.keyboard_arrow_down),
+                tooltip: 'Next',
+                iconSize: IconTheme
+                    .of(context)
+                    .size!,
+                color: IconTheme
+                    .of(context)
+                    .color,
+                disabledColor: Theme
+                    .of(context)
+                    .disabledColor,
+                onPressed: _nextIndex != null ? _onTapDown : null,
+              )
                   : const SizedBox.shrink(),
               Spacer(),
               if (_currentAction?.displayDoneButton != null &&
@@ -525,7 +556,7 @@ class KeyboardActionstate extends State<KeyboardActions>
                     },
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                       child: config?.defaultDoneWidget ??
                           Text(
                             "Done",
@@ -550,7 +581,7 @@ class KeyboardActionstate extends State<KeyboardActions>
   }
 
   final GlobalKey<BottomAreaAvoiderState> bottomAreaAvoiderKey =
-      GlobalKey<BottomAreaAvoiderState>();
+  GlobalKey<BottomAreaAvoiderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -566,23 +597,23 @@ class KeyboardActionstate extends State<KeyboardActions>
     // The SizedBox can be removed when thats fixed.
     return widget.enable && !widget.disableScroll
         ? Material(
-            color: Colors.transparent,
-            child: SizedBox(
-              width: double.maxFinite,
-              key: _keyParent,
-              child: BottomAreaAvoider(
-                key: bottomAreaAvoiderKey,
-                areaToAvoid: _offset,
-                overscroll: widget.overscroll,
-                duration: Duration(
-                    milliseconds:
-                        (_timeToDismiss.inMilliseconds * 1.8).toInt()),
-                autoScroll: widget.autoScroll,
-                physics: widget.bottomAvoiderScrollPhysics,
-                child: widget.child,
-              ),
-            ),
-          )
+      color: Colors.transparent,
+      child: SizedBox(
+        width: double.maxFinite,
+        key: _keyParent,
+        child: BottomAreaAvoider(
+          key: bottomAreaAvoiderKey,
+          areaToAvoid: _offset,
+          overscroll: widget.overscroll,
+          duration: Duration(
+              milliseconds:
+              (_timeToDismiss.inMilliseconds * 1.8).toInt()),
+          autoScroll: widget.autoScroll,
+          physics: widget.bottomAvoiderScrollPhysics,
+          child: widget.child,
+        ),
+      ),
+    )
         : widget.child!;
   }
 }
